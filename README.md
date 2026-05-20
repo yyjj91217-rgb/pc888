@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>转转乐</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+body{
+  background:#990000;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:"Microsoft YaHei";
+}
+  background:
+  linear-gradient(
+    135deg,
+    #7b0000,
+    #c40000,
+    #7b0000
+  );
+}
+
+.container{
+  width:90%;
+  max-width:500px;
+  text-align:center;
+}
+
+h1{
+  color:#ffd700;
+  font-size:64px;
+  font-weight:bold;
+  margin-bottom:20px;
+}
+
+.id-show{
+  color:#ffd700;
+  font-size:22px;
+  margin-bottom:20px;
+  font-weight:bold;
+}
+
+.id-input{
+  width:100%;
+  height:70px;
+  border:none;
+  border-radius:20px;
+  padding:0 25px;
+  font-size:22px;
+  margin-bottom:35px;
+  outline:none;
+}
+
+.wheel-box{
+  width:160vw;
+  height:160vw;
+
+  max-width:420px;
+  max-height:420px;
+
+  margin:auto;
+  position:relative;
+}
+
+.pointer{
+  position:absolute;
+  top:-10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:22px solid transparent;
+  border-right:22px solid transparent;
+  border-top:45px solid #ffd700;
+  z-index:10;
+}
+
+.wheel{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  border:10px solid #ffd700;
+  position:relative;
+  overflow:hidden;
+  transition:transform 5s ease-out;
+
+  background:
+conic-gradient(
+#ff4d4d 0deg 45deg,
+#ff944d 45deg 90deg,
+#ffd24d 90deg 135deg,
+#66cc66 135deg 180deg,
+#4da6ff 180deg 225deg,
+#b366ff 225deg 270deg,
+#ff66b3 270deg 315deg,
+#66ffff 315deg 360deg
+);
+}
+
+.label{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+}
+
+.label span{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:90px;
+  margin-left:-45px;
+  margin-top:-18px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+  color:white;
+}
+
+/* 完美居中 + 全部正方向 */
+
+.s1{
+transform:
+rotate(22.5deg)
+translateY(-145px)
+rotate(-22.5deg);
+}
+
+.s2{
+transform:
+rotate(67.5deg)
+translateY(-145px)
+rotate(-67.5deg);
+}
+
+.s3{
+transform:
+rotate(112.5deg)
+translateY(-145px)
+rotate(-112.5deg);
+}
+
+.s4{
+transform:
+rotate(157.5deg)
+translateY(-145px)
+rotate(-157.5deg);
+}
+
+.s5{
+transform:
+rotate(202.5deg)
+translateY(-145px)
+rotate(-202.5deg);
+}
+
+.s6{
+transform:
+rotate(247.5deg)
+translateY(-145px)
+rotate(-247.5deg);
+}
+
+.s7{
+transform:
+rotate(292.5deg)
+translateY(-145px)
+rotate(-292.5deg);
+}
+
+.s8{
+transform:
+rotate(337.5deg)
+translateY(-145px)
+rotate(-337.5deg);
+}
+
+.draw-btn{
+  width:100%;
+  height:75px;
+  margin-top:40px;
+  border:none;
+  border-radius:50px;
+  background:#ffd700;
+  color:black;
+  font-size:30px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.draw-btn:hover{
+  opacity:0.9;
+}
+
+.notice{
+  margin-top:30px;
+  color:white;
+  line-height:1.8;
+  font-size:20px;
+}
+
+.result{
+  margin-top:30px;
+  color:#ffd700;
+  font-size:42px;
+  font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>   转转乐</h1>
+
+<div class="id-show">
+当前ID：
+<span id="currentId">未输入</span>
+</div>
+
+<input
+type="text"
+id="userId"
+class="id-input"
+placeholder="请输入ID"
+>
+
+<div class="wheel-box">
+
+<div class="pointer"></div>
+
+<div class="wheel" id="wheel">
+
+<div class="label">
+
+<span class="s1">18元</span>
+
+<span class="s2">188元</span>
+
+<span class="s3">138元</span>
+
+<span class="s4">88元</span>
+
+<span class="s5">58元</span>
+
+<span class="s6">38元</span>
+
+<span class="s7">888元</span>
+
+<span class="s8">1888元</span>
+
+
+</div>
+
+</div>
+
+</div>
+
+<button
+class="draw-btn"
+onclick="startDraw()"
+>
+开始抽奖
+</button>
+
+<div class="notice">
+抽中奖励后不要刷新页面，刷新页面后奖励无效<br>
+凭截图联系客服核对ID领取奖励
+</div>
+
+<script>
+
+const prizes = [
+
+{
+name:"138元",
+chance:0,
+index:4
+},
+
+{
+name:"88元",
+chance:50,
+index:6
+},
+
+{
+name:"58元",
+chance:506,
+index:7
+},
+
+{
+name:"38元",
+chance:2000,
+index:0
+},
+
+{
+name:"18元",
+chance:7444,
+index:3
+},
+
+{
+name:"188元",
+chance:0,
+index:5
+},
+
+{
+name:"888元",
+chance:0,
+index:1
+},
+
+{
+name:"1888元",
+chance:0,
+index:2
+}
+];
+
+let currentRotate = 0;
+
+let isDrawing = false;
+
+function getPrize(){
+
+let random = Math.random() * 10000;
+
+let current = 0;
+
+for(let i = 0; i < prizes.length; i++){
+
+current += prizes[i].chance;
+
+if(random < current){
+
+return prizes[i];
+
+}
+
+}
+
+return prizes[0];
+
+}
+
+function startDraw(){
+
+const userId =
+document.getElementById("userId")
+.value
+.trim();
+
+// 只能8位数字
+if(!/^\d{8}$/.test(userId)){
+
+alert("请输入8位数字ID");
+
+return;
+
+}
+
+document.getElementById("currentId")
+.innerText = userId;
+
+const today =
+new Date().toLocaleDateString();
+
+const storageKey =
+"usedIds_" + today;
+
+const usedIds =
+JSON.parse(
+localStorage.getItem(storageKey)
+|| "[]"
+);
+
+const oldRecord =
+usedIds.find(item => item.id === userId);
+
+if(oldRecord){
+
+alert(
+"该ID今天已经抽过奖了\n" +
+"该ID抽中奖励：" + oldRecord.prize
+);
+
+return;
+
+}
+
+if(isDrawing) return;
+
+isDrawing = true;
+
+const sound =
+document.getElementById("spinSound");
+
+sound.currentTime = 0;
+sound.play();
+
+const prize = getPrize();
+
+const wheel =
+document.getElementById("wheel");
+
+/*
+真实扇形中心角度
+对应：
+18 188 138 88 58 38
+*/
+
+const centerAngles = [
+22.5,
+67.5,
+112.5,
+157.5,
+202.5,
+247.5,
+292.5,
+337.5
+];
+
+const targetAngle =
+centerAngles[prize.index];
+
+/*
+指针在顶部
+所以用 270
+*/
+
+const rotateDeg =
+5600 + (290 - targetAngle);
+
+currentRotate = rotateDeg;
+
+wheel.style.transform =
+`rotate(${currentRotate}deg)`;
+
+setTimeout(()=>{
+
+alert("恭喜您获得：" + prize.name);
+
+usedIds.push({
+id:userId,
+prize:prize.name
+});
+
+localStorage.setItem(
+storageKey,
+JSON.stringify(usedIds)
+);
+
+isDrawing = false;
+
+},5000);
+
+}
+
+</script>
+
+<audio
+id="spinSound"
+preload="auto"
+>
+<source src="https://actions.google.com/sounds/v1/casino/roulette_wheel_spin.ogg" type="audio/ogg">
+</audio>
+
+</body>
+</html>
